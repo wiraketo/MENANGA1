@@ -51,7 +51,7 @@
         }
         var map = L.map('map', {
             zoomControl:true, maxZoom:28, minZoom:1
-        }).fitBounds([[-8.456188443961793,115.35649317191226],[-8.367859148679699,115.51040979598126]]);
+        }).fitBounds([[-8.428455966517914,115.39636130766853],[-8.384291318876846,115.47331961970332]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
@@ -187,6 +187,19 @@
         var baseMaps = {};
         L.control.layers(baseMaps,{'DESA_MENANGA<br /><table><tr><td style="text-align: center;"><img src="legend/DESA_MENANGA_1_BIDKOSONG0.png" /></td><td>BID KOSONG</td></tr><tr><td style="text-align: center;"><img src="legend/DESA_MENANGA_1_BIDANGK31.png" /></td><td>BIDANG K3</td></tr><tr><td style="text-align: center;"><img src="legend/DESA_MENANGA_1_SERTIPIKAT2.png" /></td><td>SERTIPIKAT</td></tr></table>': layer_DESA_MENANGA_1,"Google Satellite": layer_GoogleSatellite_0,}).addTo(map);
         setBounds();
+        var i = 0;
+        layer_DESA_MENANGA_1.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['PEMILIK'] !== null?String('<div style="color: #fbff01; font-size: 10pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['PEMILIK']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_DESA_MENANGA_1'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
         map.addControl(new L.Control.Search({
             layer: layer_DESA_MENANGA_1,
             initial: false,
@@ -194,6 +207,16 @@
             propertyName: 'NIB_3'}));
         document.getElementsByClassName('search-button')[0].className +=
          ' fa fa-binoculars';
+        resetLabels([layer_DESA_MENANGA_1]);
+        map.on("zoomend", function(){
+            resetLabels([layer_DESA_MENANGA_1]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_DESA_MENANGA_1]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_DESA_MENANGA_1]);
+        });
         </script>
     </body>
 </html>
